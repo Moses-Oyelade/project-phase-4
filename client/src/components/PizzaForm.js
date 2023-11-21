@@ -56,7 +56,7 @@ function PizzaForm({ restaurantId, onAddPizza }) {
       <label htmlFor="pizza_id">Price:</label>
       <input
         type="number"
-        value={price}
+        value={parseInt(price)}
         onChange={(e) => setPrice(e.target.value)}
       />
       {formErrors.length > 0

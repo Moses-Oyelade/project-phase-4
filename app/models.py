@@ -3,19 +3,18 @@ from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 
 
-
 db = SQLAlchemy()
 
 class Restaurant(db.Model, SerializerMixin):
     __tablename__ = 'restaurants'
     
-    serialize_rules = ('-restaurant_pizzas.restaurant',)
+    # serialize_rules = ('-restaurant_pizzas.restaurant',)
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
     address = db.Column(db.String)
     
-    restaurant_pizza = db.relationship('RestaurantPizza', backref='restaurant')
+    # restaurant_pizza = db.relationship('RestaurantPizza', backref='restaurant')
     pizzas =db.relationship('Pizza', secondary ='restaurant_pizzas', back_populates=('restaurants'))
     
     
@@ -26,7 +25,7 @@ class Restaurant(db.Model, SerializerMixin):
 class Pizza(db.Model, SerializerMixin):
     __tablename__ = 'pizzas'
     
-    serialize_rules = ('-restaurant_pizzas.pizza',)
+    serialize_rules = ('-restaurants',)
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -34,7 +33,7 @@ class Pizza(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     
-    restaurant_pizza = db.relationship('RestaurantPizza', backref='pizza')
+    # restaurant_pizza = db.relationship('RestaurantPizza', backref='pizza')
     restaurants =db.relationship('Restaurant', secondary ='restaurant_pizzas', back_populates=('pizzas'))
     
     
@@ -44,7 +43,7 @@ class Pizza(db.Model, SerializerMixin):
 class RestaurantPizza(db.Model, SerializerMixin):
     __tablename__ = 'restaurant_pizzas'
         
-    serialize_rules = ('-restaurant.restaurant_pizzas', '-pizza.restaurant_pizzas')
+    # serialize_rules = ('-restaurant.restaurant_pizzas', '-pizza.restaurant_pizzas')
     
     id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Float)
@@ -56,7 +55,8 @@ class RestaurantPizza(db.Model, SerializerMixin):
     
     @validates("price")
     def validate_price(self, key, price):
-        if price not in range(1, 30):
+        
+        if (type(price) in (int, float)) and (1 >= price >= 30):
             raise ValueError("price must be between 1 and 30")
         return price
     
